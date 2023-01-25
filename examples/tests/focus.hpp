@@ -14,12 +14,10 @@
 #include "autd3.hpp"
 
 inline void focus_test(autd3::Controller& autd) {
-  autd3::SilencerConfig silencer;
-
   autd3::modulation::Sine m(150);  // 150Hz AM
 
-  const autd3::Vector3 center = autd.geometry().center() + autd3::Vector3(0.0, 0.0, 150.0);
+  const autd3::Vector3 center = autd.geometry().center() + autd3::Vector3(0.0, 0.0, 180.0);
   autd3::gain::Focus g(center);
 
-  autd << silencer << m, g;
+  autd << autd3::SilencerConfig::none() << m, g;
 }

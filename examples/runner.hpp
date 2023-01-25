@@ -20,6 +20,7 @@
 #include <vector>
 
 #include "autd3.hpp"
+#include "autd3/liblsl/lsl_cpp.h"
 #include "tests/advanced.hpp"
 #include "tests/bessel.hpp"
 #include "tests/flag.hpp"
@@ -35,6 +36,13 @@
 #include "tests/mod_audio_file.hpp"
 #endif
 #include "tests/focus_stm.hpp"
+
+#include <chrono>
+#include <thread>
+#include<iostream>
+#include <random>
+
+using std::this_thread::sleep_for;
 
 inline int run(autd3::Controller& autd) {
   using F = std::function<void(autd3::Controller&)>;
@@ -64,26 +72,23 @@ inline int run(autd3::Controller& autd) {
   std::copy(firm_infos.begin(), firm_infos.end(), std::ostream_iterator<autd3::FirmwareInfo>(std::cout, "\n"));
   std::cout << "================================================================================================" << std::endl;
 
+  // ÉgÉäÉKÅ[èÄîı
+  lsl::stream_info info("LSLMarkersInletStreamName1", "Markers", 32, 100, lsl::cf_float32, "NIC");
+  lsl::stream_outlet outlet(info, 0, 360);
+  std::vector<float> sample(32, 1.0);
+
   autd << autd3::clear << autd3::synchronize;
 
+  std::mt19937_64 mt64(0);  //Ç‡Ç∆Ç…Ç∑ÇÈêÆêîå^ÇÃóêêîÇÕï ìrïKóv
+  std::uniform_real_distribution<double> uni(0, 1);
+
   while (true) {
-    for (size_t i = 0; i < tests.size(); i++) std::cout << "[" << i << "]: " << tests[i].second << std::endl;
-    std::cout << "[Others]: finish." << std::endl;
-
-    std::cout << "Choose number: ";
-    std::string in;
-    size_t idx;
-    getline(std::cin, in);
-    std::stringstream s(in);
-    if (const auto empty = in == "\n"; !(s >> idx) || idx >= tests.size() || empty) break;
-
-    tests[idx].first(autd);
-
-    std::cout << "press any key to finish..." << std::endl;
-    std::cin.ignore();
-
-    std::cout << "finish." << std::endl;
-    autd << autd3::stop;
+      //20msèoÇ∑->2-3sé~ÇﬂÇÈ
+      outlet.push_sample(sample);
+      tests[0].first(autd);
+      sleep_for(std::chrono::milliseconds(20));
+      autd << autd3::stop;
+      sleep_for(std::chrono::milliseconds(2000 + int(uni(mt64)*1000)));
   }
 
   autd.close();
