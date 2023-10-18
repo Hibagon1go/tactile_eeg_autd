@@ -25,7 +25,7 @@ inline void holo_test(autd3::Controller& autd) {
 
   autd3::modulation::Sine m(150);  // 150Hz AM
 
-  const autd3::Vector3 center = autd.geometry().center() + autd3::Vector3(0.0, 0.0, 150.0);
+  const autd3::Vector3 center = autd3::Vector3(autd3::AUTD3::DEVICE_WIDTH - 10.0, -10.0, 240.0);
 
   std::cout << "Select Optimization Method (default is GSPAT)" << std::endl;
 
@@ -42,20 +42,20 @@ inline void holo_test(autd3::Controller& autd) {
   opts.emplace_back(std::make_tuple("LSSGreedy", std::make_shared<autd3::gain::holo::LSSGreedy>(backend)));
   opts.emplace_back(std::make_tuple("APO", std::make_shared<autd3::gain::holo::APO>(backend)));
 
-  size_t i = 0;
+  /*size_t i = 0;
   for (const auto& [name, _opt] : opts) std::cout << "[" << i++ << "]: " << name << std::endl;
 
   std::string in;
   size_t idx;
   getline(std::cin, in);
   std::stringstream s(in);
-  if (const auto empty = in == "\n"; !(s >> idx) || idx >= opts.size() || empty) idx = 3;
+  if (const auto empty = in == "\n"; !(s >> idx) || idx >= opts.size() || empty) idx = 3;*/
 
-  auto& [_, g] = opts[idx];
-  g->add_focus(center + autd3::Vector3(30.0, 0.0, 0.0), 1.0);
-  g->add_focus(center - autd3::Vector3(30.0, 0.0, 0.0), 1.0);
-  g->add_focus(center + autd3::Vector3(0.0, 30.0, 0.0), 1.0);
-  g->add_focus(center - autd3::Vector3(0.0, 30.0, 0.0), 1.0);
+  auto& [_, g] = opts[0];
+  g->add_focus(center + autd3::Vector3(10.0, 0.0, 0.0), 1.0);
+  g->add_focus(center - autd3::Vector3(10.0, 0.0, 0.0), 1.0);
+  g->add_focus(center + autd3::Vector3(0.0, 10.0, 0.0), 1.0);
+  g->add_focus(center - autd3::Vector3(0.0, 10.0, 0.0), 1.0);
 
   g->constraint = std::make_unique<autd3::gain::holo::Uniform>(1.0);
 

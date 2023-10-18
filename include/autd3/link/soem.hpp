@@ -57,7 +57,7 @@ class SOEM {
         _sync0_cycle(2),
         _send_cycle(2),
         _callback(nullptr),
-        _sync_mode(SYNC_MODE::DC),
+        _sync_mode(SYNC_MODE::FREE_RUN),
         _state_check_interval(std::chrono::milliseconds(100)) {}
 
   /**

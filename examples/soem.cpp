@@ -20,9 +20,9 @@ int main() try {
   autd3::Controller autd;
 
   autd.geometry().add_device(autd3::AUTD3(autd3::Vector3::Zero(), autd3::Vector3::Zero()));
-  autd.geometry().add_device(autd3::AUTD3(autd3::Vector3(-autd3::AUTD3::DEVICE_WIDTH, 0, 0), autd3::Vector3::Zero()));
-  autd.geometry().add_device(autd3::AUTD3(autd3::Vector3(-autd3::AUTD3::DEVICE_WIDTH, autd3::AUTD3::DEVICE_HEIGHT, 0), autd3::Vector3::Zero()));
-  autd.geometry().add_device(autd3::AUTD3(autd3::Vector3(0, autd3::AUTD3::DEVICE_HEIGHT, 0), autd3::Vector3::Zero()));
+  autd.geometry().add_device(autd3::AUTD3(autd3::Vector3(autd3::AUTD3::DEVICE_WIDTH, 0, 0), autd3::Vector3::Zero()));
+  autd.geometry().add_device(autd3::AUTD3(autd3::Vector3(autd3::AUTD3::DEVICE_WIDTH, -autd3::AUTD3::DEVICE_HEIGHT, 0), autd3::Vector3::Zero()));
+  autd.geometry().add_device(autd3::AUTD3(autd3::Vector3(0, -autd3::AUTD3::DEVICE_HEIGHT, 0), autd3::Vector3::Zero()));
 
   if (auto link = autd3::link::SOEM()
                       .on_lost([](const std::string& msg) {
