@@ -59,19 +59,15 @@ inline int run(autd3::Controller &autd)
     std::copy(firm_infos.begin(), firm_infos.end(), std::ostream_iterator<autd3::FirmwareInfo>(std::cout, "\n"));
     std::cout << "================================================================================================" << std::endl;
 
-    // �g���K�[����
-
-    // �V���A���|�[�g���J��
+    // シリアルポートを開く
     HANDLE hComm;
     hComm = CreateFile("COM3", GENERIC_READ | GENERIC_WRITE, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
     if (hComm == INVALID_HANDLE_VALUE)
     {
         if (GetLastError() == ERROR_FILE_NOT_FOUND)
         {
-            // �V���A���|�[�g�����݂��Ȃ��ꍇ�̃G���[���b�Z�[�W
             printf("Serial port does not exist.\n");
         }
-        // ���̃G���[
         printf("Failed to open serial port.\n");
     }
     else
@@ -79,7 +75,7 @@ inline int run(autd3::Controller &autd)
         printf("COM3 port found.\n");
     }
 
-    // COM�|�[�g�̐ݒ�
+    // COMポートの設定
     DCB dcbSerialParams = {0};
     dcbSerialParams.DCBlength = sizeof(dcbSerialParams);
     GetCommState(hComm, &dcbSerialParams);
@@ -89,7 +85,7 @@ inline int run(autd3::Controller &autd)
     dcbSerialParams.Parity = NOPARITY;
     SetCommState(hComm, &dcbSerialParams);
 
-    // �g���K�[�̗p��
+    // トリガーの用意
     std::string dataToSendRR = "RR";
     std::string dataToSend0 = "00";
     std::string dataToSend1 = "01";
@@ -101,8 +97,7 @@ inline int run(autd3::Controller &autd)
     std::string dataToSend7 = "07";
     DWORD bytesWritten;
 
-    // BrainAmp�ł�RR2�񑗂�
-
+    // BrainAmpではRR2回送る
     WriteFile(hComm, dataToSendRR.c_str(), dataToSendRR.size(), &bytesWritten, NULL);
     WriteFile(hComm, dataToSendRR.c_str(), dataToSendRR.size(), &bytesWritten, NULL);
 
