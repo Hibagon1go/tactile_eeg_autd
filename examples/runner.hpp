@@ -129,22 +129,22 @@ inline int run(autd3::Controller &autd)
         if (trial == 0)
         {
             WriteFile(hComm, dataToSend1.c_str(), dataToSend1.size(), &bytesWritten, NULL);
-            F{am_single}(autd, 100);
+            F{am_single}(autd, 50);
         }
         else if (trial == 1)
         {
             WriteFile(hComm, dataToSend2.c_str(), dataToSend2.size(), &bytesWritten, NULL);
-            F{am_single}(autd, 200);
+            F{am_single}(autd, 150);
         }
         else if (trial == 2)
         {
             WriteFile(hComm, dataToSend3.c_str(), dataToSend3.size(), &bytesWritten, NULL);
-            F{lm_circle}(autd, 5, 10);
+            F{lm_circle}(autd, 5, 5);
         }
         else if (trial == 3)
         {
             WriteFile(hComm, dataToSend4.c_str(), dataToSend4.size(), &bytesWritten, NULL);
-            F{lm_circle}(autd, 15, 10);
+            F{lm_circle}(autd, 15, 5);
         }
         else if (trial == 4)
         {
