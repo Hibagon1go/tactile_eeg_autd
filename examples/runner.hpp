@@ -111,15 +111,13 @@ inline int run(autd3::Controller &autd)
     std::mt19937_64 mt64(0);
     std::uniform_real_distribution<double> uni(0, 1);
 
-    std::array<int, 400> trials;
+    std::array<int, 300> trials;
     std::fill(trials.begin(), trials.begin() + 50, 0);
     std::fill(trials.begin() + 50, trials.begin() + 100, 1);
     std::fill(trials.begin() + 100, trials.begin() + 150, 2);
     std::fill(trials.begin() + 150, trials.begin() + 200, 3);
     std::fill(trials.begin() + 200, trials.begin() + 250, 4);
-    std::fill(trials.begin() + 250, trials.begin() + 300, 5);
-    std::fill(trials.begin() + 300, trials.begin() + 350, 6);
-    std::fill(trials.begin() + 350, trials.end(), 7);
+    std::fill(trials.begin() + 250, trials.end(), 5);
 
     std::shuffle(trials.begin(), trials.end(), mt64);
 
@@ -145,17 +143,17 @@ inline int run(autd3::Controller &autd)
         }
         else if (trial == 3)
         {
-            WriteFile(hComm, dataToSend4.c_str(), dataToSend1.size(), &bytesWritten, NULL);
+            WriteFile(hComm, dataToSend4.c_str(), dataToSend4.size(), &bytesWritten, NULL);
             F{lm_circle}(autd, 15, 10);
         }
         else if (trial == 4)
         {
-            WriteFile(hComm, dataToSend5.c_str(), dataToSend2.size(), &bytesWritten, NULL);
+            WriteFile(hComm, dataToSend5.c_str(), dataToSend5.size(), &bytesWritten, NULL);
             F{lm_circle}(autd, 5, 30);
         }
         else if (trial == 5)
         {
-            WriteFile(hComm, dataToSend6.c_str(), dataToSend3.size(), &bytesWritten, NULL);
+            WriteFile(hComm, dataToSend6.c_str(), dataToSend6.size(), &bytesWritten, NULL);
             F{lm_circle}(autd, 15, 30);
         }
         WriteFile(hComm, dataToSend0.c_str(), dataToSend0.size(), &bytesWritten, NULL);
@@ -166,7 +164,7 @@ inline int run(autd3::Controller &autd)
 
         sleep_for(std::chrono::milliseconds(1000));
 
-        WriteFile(hComm, dataToSend7.c_str(), dataToSend0.size(), &bytesWritten, NULL);
+        WriteFile(hComm, dataToSend7.c_str(), dataToSend7.size(), &bytesWritten, NULL);
         sleep_for(std::chrono::milliseconds(10));
         WriteFile(hComm, dataToSend0.c_str(), dataToSend0.size(), &bytesWritten, NULL);
 

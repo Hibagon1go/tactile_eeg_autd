@@ -22,6 +22,7 @@ inline void lm_circle(autd3::Controller &autd, int radius, int freq)
     autd3::modulation::Static m;
 
     autd3::FocusSTM stm(autd.get_sound_speed());
+    stm.set_frequency(freq);
 
     const autd3::Vector3 center = autd3::Vector3(autd3::AUTD3::DEVICE_WIDTH - 10.0, -10.0, 240.0);
     constexpr size_t points_num = radius * 12;
@@ -32,7 +33,5 @@ inline void lm_circle(autd3::Controller &autd, int radius, int freq)
     const auto theta = 2.0 * autd3::pi * static_cast<double>(i) / static_cast<double>(points_num);
     return autd3::FocusSTM::Focus(center + autd3::Vector3(radius * std::cos(theta), radius * std::sin(theta), 0)); });
 
-    const auto actual_freq = stm.set_frequency(freq);
-    std::cout << "Actual frequency is " << actual_freq << " Hz\n";
     autd << config << m, stm;
 }
