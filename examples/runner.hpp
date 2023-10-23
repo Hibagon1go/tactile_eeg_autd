@@ -36,124 +36,138 @@
 #ifdef BUILD_MODULATION_AUDIO_FILE
 #endif
 #include "tests/focus_stm.hpp"
+#include "tests/am_single.hpp"
+#include "tests/lmc.hpp"
 
 #include <chrono>
 #include <thread>
-#include<iostream>
+#include <iostream>
 #include <random>
 
 using std::this_thread::sleep_for;
 
-inline int run(autd3::Controller& autd) {
-  using F = std::function<void(autd3::Controller&)>;
+inline int run(autd3::Controller &autd)
+{
+    using F = std::function<void(autd3::Controller &)>;
 
-  autd.set_sound_speed(340.0e3);
+    autd.set_sound_speed(340.0e3);
 
-  const auto firm_infos = autd.firmware_infos();
-  if (firm_infos.empty()) throw std::runtime_error("Cannot read firmware information.");
-  std::cout << "================================== AUTD3 firmware information ==================================" << std::endl;
-  std::copy(firm_infos.begin(), firm_infos.end(), std::ostream_iterator<autd3::FirmwareInfo>(std::cout, "\n"));
-  std::cout << "================================================================================================" << std::endl;
+    const auto firm_infos = autd.firmware_infos();
+    if (firm_infos.empty())
+        throw std::runtime_error("Cannot read firmware information.");
+    std::cout << "================================== AUTD3 firmware information ==================================" << std::endl;
+    std::copy(firm_infos.begin(), firm_infos.end(), std::ostream_iterator<autd3::FirmwareInfo>(std::cout, "\n"));
+    std::cout << "================================================================================================" << std::endl;
 
-  // ƒgƒŠƒK[€”õ
+    // ã‚·ãƒªã‚¢ãƒ«ãƒãƒ¼ãƒˆã‚’é–‹ã
+    HANDLE hComm;
+    hComm = CreateFile("COM3", GENERIC_READ | GENERIC_WRITE, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+    if (hComm == INVALID_HANDLE_VALUE)
+    {
+        if (GetLastError() == ERROR_FILE_NOT_FOUND)
+        {
+            printf("Serial port does not exist.\n");
+        }
+        printf("Failed to open serial port.\n");
+    }
+    else
+    {
+        printf("COM3 port found.\n");
+    }
 
-  
-  // ƒVƒŠƒAƒ‹ƒ|[ƒg‚ðŠJ‚­
-  HANDLE hComm;
-  hComm = CreateFile("COM3", GENERIC_READ | GENERIC_WRITE, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
-  if (hComm == INVALID_HANDLE_VALUE) {
-      if (GetLastError() == ERROR_FILE_NOT_FOUND) {
-          // ƒVƒŠƒAƒ‹ƒ|[ƒg‚ª‘¶Ý‚µ‚È‚¢ê‡‚ÌƒGƒ‰[ƒƒbƒZ[ƒW
-          printf("Serial port does not exist.\n");
-      }
-      // ‘¼‚ÌƒGƒ‰[
-      printf("Failed to open serial port.\n");
-  }
-  else {
-      printf("COM3 port found.\n");
-  }
+    // COMãƒãƒ¼ãƒˆã®è¨­å®š
+    DCB dcbSerialParams = {0};
+    dcbSerialParams.DCBlength = sizeof(dcbSerialParams);
+    GetCommState(hComm, &dcbSerialParams);
+    dcbSerialParams.BaudRate = CBR_115200;
+    dcbSerialParams.ByteSize = 8;
+    dcbSerialParams.StopBits = ONESTOPBIT;
+    dcbSerialParams.Parity = NOPARITY;
+    SetCommState(hComm, &dcbSerialParams);
 
-  // COMƒ|[ƒg‚ÌÝ’è
-  DCB dcbSerialParams = { 0 };
-  dcbSerialParams.DCBlength = sizeof(dcbSerialParams);
-  GetCommState(hComm, &dcbSerialParams);
-  dcbSerialParams.BaudRate = CBR_115200;
-  dcbSerialParams.ByteSize = 8;
-  dcbSerialParams.StopBits = ONESTOPBIT;
-  dcbSerialParams.Parity = NOPARITY;
-  SetCommState(hComm, &dcbSerialParams);
+    // ãƒˆãƒªã‚¬ãƒ¼ã®ç”¨æ„
+    std::string dataToSendRR = "RR";
+    std::string dataToSend0 = "00";
+    std::string dataToSend1 = "01";
+    std::string dataToSend2 = "02";
+    std::string dataToSend3 = "03";
+    std::string dataToSend4 = "04";
+    std::string dataToSend5 = "05";
+    std::string dataToSend6 = "06";
+    std::string dataToSend7 = "07";
+    DWORD bytesWritten;
 
+    // BrainAmpã§ã¯RR2å›žé€ã‚‹
+    WriteFile(hComm, dataToSendRR.c_str(), dataToSendRR.size(), &bytesWritten, NULL);
+    WriteFile(hComm, dataToSendRR.c_str(), dataToSendRR.size(), &bytesWritten, NULL);
 
-  // ƒgƒŠƒK[‚Ì—pˆÓ
-  std::string dataToSendRR = "RR";
-  std::string dataToSend0 = "00";
-  std::string dataToSend1 = "01";
-  std::string dataToSend2 = "02";
-  std::string dataToSend3 = "03";
-  std::string dataToSend4 = "04";
-  DWORD bytesWritten;
+    autd << autd3::clear << autd3::synchronize;
 
-  // BrainAmp‚Å‚ÍRR2‰ñ‘—‚é
-  
-  WriteFile(hComm, dataToSendRR.c_str(), dataToSendRR.size(), &bytesWritten, NULL);
-  WriteFile(hComm, dataToSendRR.c_str(), dataToSendRR.size(), &bytesWritten, NULL);
-  
+    std::mt19937_64 mt64(0);
+    std::uniform_real_distribution<double> uni(0, 1);
 
-  /*
-  lsl::stream_info info("LSLMarkersInletStreamName1", "Markers", 32, 100, lsl::cf_float32, "NIC");
-  lsl::stream_outlet outlet(info, 0, 360);
-  std::vector<float> sample1(32, 1.0);
-  std::vector<float> sample2(32, 2.0);
-  std::vector<float> sample3(32, 3.0);
-  std::vector<float> sample4(32, 4.0);
-  */
-  
+    std::array<int, 300> trials;
+    std::fill(trials.begin(), trials.begin() + 50, 0);
+    std::fill(trials.begin() + 50, trials.begin() + 100, 1);
+    std::fill(trials.begin() + 100, trials.begin() + 150, 2);
+    std::fill(trials.begin() + 150, trials.begin() + 200, 3);
+    std::fill(trials.begin() + 200, trials.begin() + 250, 4);
+    std::fill(trials.begin() + 250, trials.end(), 5);
 
-  autd << autd3::clear << autd3::synchronize;
+    std::shuffle(trials.begin(), trials.end(), mt64);
 
-  std::mt19937_64 mt64(0);
-  std::uniform_real_distribution<double> uni(0, 1);
+    std::string dataToBrainAmp;
 
-  std::array<int, 150> trials;
-  std::fill(trials.begin(), trials.begin() + 50, 0);
-  std::fill(trials.begin() + 50, trials.begin() + 100, 1);
-  std::fill(trials.begin() + 100, trials.end(), 2);
+    for (int trial : trials)
+    {
 
-  std::shuffle(trials.begin(), trials.end(), mt64);
+        if (trial == 0)
+        {
+            WriteFile(hComm, dataToSend1.c_str(), dataToSend1.size(), &bytesWritten, NULL);
+            F{am_single}(autd, 50);
+        }
+        else if (trial == 1)
+        {
+            WriteFile(hComm, dataToSend2.c_str(), dataToSend2.size(), &bytesWritten, NULL);
+            F{am_single}(autd, 150);
+        }
+        else if (trial == 2)
+        {
+            WriteFile(hComm, dataToSend3.c_str(), dataToSend3.size(), &bytesWritten, NULL);
+            F{lm_circle}(autd, 5, 5);
+        }
+        else if (trial == 3)
+        {
+            WriteFile(hComm, dataToSend4.c_str(), dataToSend4.size(), &bytesWritten, NULL);
+            F{lm_circle}(autd, 15, 5);
+        }
+        else if (trial == 4)
+        {
+            WriteFile(hComm, dataToSend5.c_str(), dataToSend5.size(), &bytesWritten, NULL);
+            F{lm_circle}(autd, 5, 30);
+        }
+        else if (trial == 5)
+        {
+            WriteFile(hComm, dataToSend6.c_str(), dataToSend6.size(), &bytesWritten, NULL);
+            F{lm_circle}(autd, 15, 30);
+        }
+        WriteFile(hComm, dataToSend0.c_str(), dataToSend0.size(), &bytesWritten, NULL);
 
-  for (int trial : trials) {
+        sleep_for(std::chrono::milliseconds(1000));
 
-      if (trial == 0) {
-          WriteFile(hComm, dataToSend1.c_str(), dataToSend1.size(), &bytesWritten, NULL);
-          //outlet.push_sample(sample1);
-          F{ focus_test_weak }(autd);
-      }
-      else if (trial == 1) {
-          WriteFile(hComm, dataToSend2.c_str(), dataToSend2.size(), &bytesWritten, NULL);
-          //outlet.push_sample(sample2);
-          F{ focus_test_strong }(autd);
-      }
-      else if (trial == 2) {
-          WriteFile(hComm, dataToSend3.c_str(), dataToSend3.size(), &bytesWritten, NULL);
-          //outlet.push_sample(sample3);
-          F{ focus_stm }(autd);
-      }
+        autd << autd3::stop;
 
-      WriteFile(hComm, dataToSend0.c_str(), dataToSend0.size(), &bytesWritten, NULL);
-      sleep_for(std::chrono::milliseconds(500));
+        sleep_for(std::chrono::milliseconds(1000));
 
-      autd << autd3::stop;
+        WriteFile(hComm, dataToSend7.c_str(), dataToSend7.size(), &bytesWritten, NULL);
+        sleep_for(std::chrono::milliseconds(10));
+        WriteFile(hComm, dataToSend0.c_str(), dataToSend0.size(), &bytesWritten, NULL);
 
-      sleep_for(std::chrono::milliseconds(1000));
-      WriteFile(hComm, dataToSend4.c_str(), dataToSend0.size(), &bytesWritten, NULL);
-      sleep_for(std::chrono::milliseconds(10));
-      WriteFile(hComm, dataToSend0.c_str(), dataToSend0.size(), &bytesWritten, NULL);
-      //outlet.push_sample(sample4);
-      sleep_for(std::chrono::milliseconds(1250 + int(uni(mt64) *250)));
-  }
+        sleep_for(std::chrono::milliseconds(1500 + int(uni(mt64) * 1000)));
+    }
 
-  autd.close();
-  CloseHandle(hComm);
+    autd.close();
+    CloseHandle(hComm);
 
-  return 0;
+    return 0;
 }
