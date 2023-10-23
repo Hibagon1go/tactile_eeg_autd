@@ -124,32 +124,32 @@ inline int run(autd3::Controller &autd)
         if (trial == 0)
         {
             WriteFile(hComm, dataToSend1.c_str(), dataToSend1.size(), &bytesWritten, NULL);
-            F{am_single}(autd, 50);
+            F{am_single_50}(autd);
         }
         else if (trial == 1)
         {
             WriteFile(hComm, dataToSend2.c_str(), dataToSend2.size(), &bytesWritten, NULL);
-            F{am_single}(autd, 150);
+            F{am_single_150}(autd);
         }
         else if (trial == 2)
         {
             WriteFile(hComm, dataToSend3.c_str(), dataToSend3.size(), &bytesWritten, NULL);
-            F{lm_circle}(autd, 5, 5);
+            F{lm_circle_5_5}(autd);
         }
         else if (trial == 3)
         {
             WriteFile(hComm, dataToSend4.c_str(), dataToSend4.size(), &bytesWritten, NULL);
-            F{lm_circle}(autd, 15, 5);
+            F{lm_circle_15_5}(autd);
         }
         else if (trial == 4)
         {
             WriteFile(hComm, dataToSend5.c_str(), dataToSend5.size(), &bytesWritten, NULL);
-            F{lm_circle}(autd, 5, 30);
+            F{lm_circle_5_30}(autd);
         }
         else if (trial == 5)
         {
             WriteFile(hComm, dataToSend6.c_str(), dataToSend6.size(), &bytesWritten, NULL);
-            F{lm_circle}(autd, 15, 30);
+            F{lm_circle_15_30}(autd);
         }
         WriteFile(hComm, dataToSend0.c_str(), dataToSend0.size(), &bytesWritten, NULL);
 
