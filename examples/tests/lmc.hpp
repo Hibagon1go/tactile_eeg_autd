@@ -36,9 +36,11 @@ inline void lm_circle_5_5(autd3::Controller &autd)
     stm.set_frequency(5);
 
     autd << config << m, stm;
+    sleep_for(std::chrono::milliseconds(1000));
+    autd << autd3::stop;
 }
 
-inline void lm_circle_15_5(autd3::Controller& autd)
+inline void lm_circle_15_5(autd3::Controller &autd)
 {
     auto config = autd3::SilencerConfig::none();
 
@@ -52,16 +54,18 @@ inline void lm_circle_15_5(autd3::Controller& autd)
     std::vector<size_t> points(points_num);
     std::iota(points.begin(), points.end(), 0);
     std::transform(points.begin(), points.end(), std::back_inserter(stm), [&](const size_t i)
-        {
+                   {
             const auto theta = 2.0 * autd3::pi * static_cast<double>(i) / static_cast<double>(points_num);
     return autd3::FocusSTM::Focus(center + autd3::Vector3(radius * std::cos(theta), radius * std::sin(theta), 0)); });
 
     stm.set_frequency(5);
 
     autd << config << m, stm;
+    sleep_for(std::chrono::milliseconds(1000));
+    autd << autd3::stop;
 }
 
-inline void lm_circle_5_30(autd3::Controller& autd)
+inline void lm_circle_5_30(autd3::Controller &autd)
 {
     auto config = autd3::SilencerConfig::none();
 
@@ -75,16 +79,18 @@ inline void lm_circle_5_30(autd3::Controller& autd)
     std::vector<size_t> points(points_num);
     std::iota(points.begin(), points.end(), 0);
     std::transform(points.begin(), points.end(), std::back_inserter(stm), [&](const size_t i)
-        {
+                   {
             const auto theta = 2.0 * autd3::pi * static_cast<double>(i) / static_cast<double>(points_num);
     return autd3::FocusSTM::Focus(center + autd3::Vector3(radius * std::cos(theta), radius * std::sin(theta), 0)); });
 
     stm.set_frequency(30);
 
     autd << config << m, stm;
+    sleep_for(std::chrono::milliseconds(1000));
+    autd << autd3::stop;
 }
 
-inline void lm_circle_15_30(autd3::Controller& autd)
+inline void lm_circle_15_30(autd3::Controller &autd)
 {
     auto config = autd3::SilencerConfig::none();
 
@@ -98,11 +104,13 @@ inline void lm_circle_15_30(autd3::Controller& autd)
     std::vector<size_t> points(points_num);
     std::iota(points.begin(), points.end(), 0);
     std::transform(points.begin(), points.end(), std::back_inserter(stm), [&](const size_t i)
-        {
+                   {
             const auto theta = 2.0 * autd3::pi * static_cast<double>(i) / static_cast<double>(points_num);
     return autd3::FocusSTM::Focus(center + autd3::Vector3(radius * std::cos(theta), radius * std::sin(theta), 0)); });
 
     stm.set_frequency(30);
 
     autd << config << m, stm;
+    sleep_for(std::chrono::milliseconds(1000));
+    autd << autd3::stop;
 }
