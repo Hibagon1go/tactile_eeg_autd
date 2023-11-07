@@ -96,6 +96,7 @@ inline int run(autd3::Controller &autd)
     std::string dataToSend5 = "05";
     std::string dataToSend6 = "06";
     std::string dataToSend7 = "07";
+    std::string dataToSend8 = "08";
     DWORD bytesWritten;
 
     // BrainAmpではRR2回送る
