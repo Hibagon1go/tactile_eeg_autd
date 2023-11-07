@@ -38,7 +38,7 @@ inline void lm_circle_7_5_5(autd3::Controller &autd)
     autd << config << m, stm;
 }
 
-inline void lm_circle_15_5(autd3::Controller& autd)
+inline void lm_circle_15_5(autd3::Controller &autd)
 {
     auto config = autd3::SilencerConfig::none();
 
@@ -52,13 +52,13 @@ inline void lm_circle_15_5(autd3::Controller& autd)
     std::vector<size_t> points(points_num);
     std::iota(points.begin(), points.end(), 0);
     std::transform(points.begin(), points.end(), std::back_inserter(stm), [&](const size_t i)
-        {
+                   {
             const auto theta = 2.0 * autd3::pi * static_cast<double>(i) / static_cast<double>(points_num);
     return autd3::FocusSTM::Focus(center + autd3::Vector3(radius * std::cos(theta), radius * std::sin(theta), 0)); });
 
     stm.set_frequency(5);
 
-    autd << config << m, stm;
+    autd << config << m, stm;;
 }
 
 inline void lm_circle_7_5_30(autd3::Controller& autd)
@@ -75,7 +75,7 @@ inline void lm_circle_7_5_30(autd3::Controller& autd)
     std::vector<size_t> points(points_num);
     std::iota(points.begin(), points.end(), 0);
     std::transform(points.begin(), points.end(), std::back_inserter(stm), [&](const size_t i)
-        {
+                   {
             const auto theta = 2.0 * autd3::pi * static_cast<double>(i) / static_cast<double>(points_num);
     return autd3::FocusSTM::Focus(center + autd3::Vector3(radius * std::cos(theta), radius * std::sin(theta), 0)); });
 
@@ -84,7 +84,7 @@ inline void lm_circle_7_5_30(autd3::Controller& autd)
     autd << config << m, stm;
 }
 
-inline void lm_circle_15_30(autd3::Controller& autd)
+inline void lm_circle_15_30(autd3::Controller &autd)
 {
     auto config = autd3::SilencerConfig::none();
 
@@ -98,7 +98,7 @@ inline void lm_circle_15_30(autd3::Controller& autd)
     std::vector<size_t> points(points_num);
     std::iota(points.begin(), points.end(), 0);
     std::transform(points.begin(), points.end(), std::back_inserter(stm), [&](const size_t i)
-        {
+                   {
             const auto theta = 2.0 * autd3::pi * static_cast<double>(i) / static_cast<double>(points_num);
     return autd3::FocusSTM::Focus(center + autd3::Vector3(radius * std::cos(theta), radius * std::sin(theta), 0)); });
 
