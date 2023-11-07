@@ -20,8 +20,7 @@
 #include <vector>
 #include <windows.h>
 
-#include "autd3.hpp"
-#include "autd3/liblsl/lsl_cpp.h"
+//#include "autd3/liblsl/lsl_cpp.h"
 #include "tests/advanced.hpp"
 #include "tests/bessel.hpp"
 #include "tests/flag.hpp"
@@ -52,12 +51,14 @@ inline int run(autd3::Controller &autd)
 
     autd.set_sound_speed(340.0e3);
 
+    /*
     const auto firm_infos = autd.firmware_infos();
     if (firm_infos.empty())
         throw std::runtime_error("Cannot read firmware information.");
     std::cout << "================================== AUTD3 firmware information ==================================" << std::endl;
     std::copy(firm_infos.begin(), firm_infos.end(), std::ostream_iterator<autd3::FirmwareInfo>(std::cout, "\n"));
     std::cout << "================================================================================================" << std::endl;
+    */
 
     // シリアルポートを開く
     HANDLE hComm;
@@ -95,6 +96,7 @@ inline int run(autd3::Controller &autd)
     std::string dataToSend5 = "05";
     std::string dataToSend6 = "06";
     std::string dataToSend7 = "07";
+    std::string dataToSend8 = "08";
     DWORD bytesWritten;
 
     // BrainAmpではRR2回送る
@@ -106,13 +108,14 @@ inline int run(autd3::Controller &autd)
     std::mt19937_64 mt64(0);
     std::uniform_real_distribution<double> uni(0, 1);
 
-    std::array<int, 300> trials;
-    std::fill(trials.begin(), trials.begin() + 50, 0);
-    std::fill(trials.begin() + 50, trials.begin() + 100, 1);
-    std::fill(trials.begin() + 100, trials.begin() + 150, 2);
-    std::fill(trials.begin() + 150, trials.begin() + 200, 3);
-    std::fill(trials.begin() + 200, trials.begin() + 250, 4);
-    std::fill(trials.begin() + 250, trials.end(), 5);
+    std::array<int, 160> trials;
+    std::fill(trials.begin(), trials.begin() + 25, 0);
+    std::fill(trials.begin() + 25, trials.begin() + 50, 1);
+    std::fill(trials.begin() + 50, trials.begin() + 75, 2);
+    std::fill(trials.begin() + 75, trials.begin() + 100, 3);
+    std::fill(trials.begin() + 100, trials.begin() + 125, 4);
+    std::fill(trials.begin() + 125, trials.begin() + 150, 5);
+    std::fill(trials.begin() + 150, trials.end(), 6);
 
     std::shuffle(trials.begin(), trials.end(), mt64);
 
@@ -124,46 +127,80 @@ inline int run(autd3::Controller &autd)
         if (trial == 0)
         {
             WriteFile(hComm, dataToSend1.c_str(), dataToSend1.size(), &bytesWritten, NULL);
-            F{am_single_50}(autd);
+            F{am_single_100}(autd);
+            WriteFile(hComm, dataToSend0.c_str(), dataToSend0.size(), &bytesWritten, NULL);
+            sleep_for(std::chrono::milliseconds(500));
+            autd << autd3::stop;
         }
         else if (trial == 1)
         {
             WriteFile(hComm, dataToSend2.c_str(), dataToSend2.size(), &bytesWritten, NULL);
-            F{am_single_150}(autd);
+            F{ am_single_200 }(autd);
+            WriteFile(hComm, dataToSend0.c_str(), dataToSend0.size(), &bytesWritten, NULL);
+            sleep_for(std::chrono::milliseconds(500));
+            autd << autd3::stop;
         }
         else if (trial == 2)
         {
             WriteFile(hComm, dataToSend3.c_str(), dataToSend3.size(), &bytesWritten, NULL);
-            F{lm_circle_5_5}(autd);
+            F{lm_circle_7_5_5}(autd);
+            WriteFile(hComm, dataToSend0.c_str(), dataToSend0.size(), &bytesWritten, NULL);
+            sleep_for(std::chrono::milliseconds(500));
+            autd << autd3::stop;
         }
         else if (trial == 3)
         {
             WriteFile(hComm, dataToSend4.c_str(), dataToSend4.size(), &bytesWritten, NULL);
             F{lm_circle_15_5}(autd);
+            WriteFile(hComm, dataToSend0.c_str(), dataToSend0.size(), &bytesWritten, NULL);
+            sleep_for(std::chrono::milliseconds(500));
+            autd << autd3::stop;
         }
         else if (trial == 4)
         {
             WriteFile(hComm, dataToSend5.c_str(), dataToSend5.size(), &bytesWritten, NULL);
-            F{lm_circle_5_30}(autd);
+            F{lm_circle_7_5_30}(autd);
+            WriteFile(hComm, dataToSend0.c_str(), dataToSend0.size(), &bytesWritten, NULL);
+            sleep_for(std::chrono::milliseconds(500));
+            autd << autd3::stop;
         }
         else if (trial == 5)
         {
             WriteFile(hComm, dataToSend6.c_str(), dataToSend6.size(), &bytesWritten, NULL);
             F{lm_circle_15_30}(autd);
+            WriteFile(hComm, dataToSend0.c_str(), dataToSend0.size(), &bytesWritten, NULL);
+            sleep_for(std::chrono::milliseconds(500));
+            autd << autd3::stop;
         }
-        WriteFile(hComm, dataToSend0.c_str(), dataToSend0.size(), &bytesWritten, NULL);
+        else if (trial == 6)
+        {
+            WriteFile(hComm, dataToSend7.c_str(), dataToSend7.size(), &bytesWritten, NULL);
+            sleep_for(std::chrono::milliseconds(10));
+            WriteFile(hComm, dataToSend0.c_str(), dataToSend0.size(), &bytesWritten, NULL);
+
+            autd3::modulation::Sine m(150);
+
+            const autd3::Vector3 center = autd3::Vector3(autd3::AUTD3::DEVICE_WIDTH - 10.0, -10.0, 240.0);
+            autd3::gain::Focus g(center, 1.0);
+
+            autd << autd3::SilencerConfig::none() << m, g;
+            sleep_for(std::chrono::milliseconds(100));
+            autd << autd3::stop;
+
+            sleep_for(std::chrono::milliseconds(100));
+
+            autd << autd3::SilencerConfig::none() << m, g;
+            sleep_for(std::chrono::milliseconds(100));
+            autd << autd3::stop;
+        }
 
         sleep_for(std::chrono::milliseconds(1000));
 
-        autd << autd3::stop;
-
-        sleep_for(std::chrono::milliseconds(1000));
-
-        WriteFile(hComm, dataToSend7.c_str(), dataToSend7.size(), &bytesWritten, NULL);
+        WriteFile(hComm, dataToSend8.c_str(), dataToSend8.size(), &bytesWritten, NULL);
         sleep_for(std::chrono::milliseconds(10));
         WriteFile(hComm, dataToSend0.c_str(), dataToSend0.size(), &bytesWritten, NULL);
 
-        sleep_for(std::chrono::milliseconds(1500 + int(uni(mt64) * 1000)));
+        sleep_for(std::chrono::milliseconds(1000 + int(uni(mt64) * 1000)));
     }
 
     autd.close();

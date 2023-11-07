@@ -15,7 +15,7 @@
 #include <autd3.hpp>
 #include <vector>
 
-inline void lm_circle_5_5(autd3::Controller &autd)
+inline void lm_circle_7_5_5(autd3::Controller &autd)
 {
     auto config = autd3::SilencerConfig::none();
 
@@ -24,7 +24,7 @@ inline void lm_circle_5_5(autd3::Controller &autd)
     autd3::FocusSTM stm(autd.get_sound_speed());
 
     const autd3::Vector3 center = autd3::Vector3(autd3::AUTD3::DEVICE_WIDTH - 10.0, -10.0, 240.0);
-    const int radius = 5;
+    const int radius = 7.5;
     constexpr size_t points_num = radius * 12;
     std::vector<size_t> points(points_num);
     std::iota(points.begin(), points.end(), 0);
@@ -61,7 +61,7 @@ inline void lm_circle_15_5(autd3::Controller& autd)
     autd << config << m, stm;
 }
 
-inline void lm_circle_5_30(autd3::Controller& autd)
+inline void lm_circle_7_5_30(autd3::Controller& autd)
 {
     auto config = autd3::SilencerConfig::none();
 
@@ -70,7 +70,7 @@ inline void lm_circle_5_30(autd3::Controller& autd)
     autd3::FocusSTM stm(autd.get_sound_speed());
 
     const autd3::Vector3 center = autd3::Vector3(autd3::AUTD3::DEVICE_WIDTH - 10.0, -10.0, 240.0);
-    const int radius = 5;
+    const int radius = 7.5;
     constexpr size_t points_num = radius * 12;
     std::vector<size_t> points(points_num);
     std::iota(points.begin(), points.end(), 0);

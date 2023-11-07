@@ -134,13 +134,6 @@ if(NOT Git_FOUND)
   message(WARNING "Git not found.")
 endif()
 
-find_package(LSL 1.13.0 REQUIRED
-      HINTS ${LSL_INSTALL_ROOT}
-      "${CMAKE_CURRENT_LIST_DIR}/../../LSL/liblsl/build/"
-      "${CMAKE_CURRENT_LIST_DIR}/../../LSL/liblsl/build/install"
-      PATH_SUFFIXES share/LSL
-)
-
 if(ENABLE_LINT)
   update_git_submodule(cpplint RECURSIVE)
   file(GLOB_RECURSE lint_files src/*.cpp src/*.hpp include/*.hpp capi/*.cpp capi/*.hpp examples/*.cpp examples/*.hpp tests/*.hpp tests/*.cpp)
@@ -263,5 +256,3 @@ add_subdirectory(examples)
 add_subdirectory(capi)
 add_subdirectory(dist)
 add_subdirectory(bench)
-
-target_link_libraries(${PROJECT_NAME} PRIVATE LSL::lsl)

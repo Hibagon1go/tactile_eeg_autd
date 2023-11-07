@@ -13,9 +13,9 @@
 
 #include "autd3.hpp"
 
-inline void am_single_50(autd3::Controller &autd)
+inline void am_single_100(autd3::Controller &autd)
 {
-  autd3::modulation::Sine m(50);
+  autd3::modulation::Sine m(100);
 
   const autd3::Vector3 center = autd3::Vector3(autd3::AUTD3::DEVICE_WIDTH - 10.0, -10.0, 240.0);
   autd3::gain::Focus g(center, 1.0);
@@ -23,13 +23,12 @@ inline void am_single_50(autd3::Controller &autd)
   autd << autd3::SilencerConfig::none() << m, g;
 }
 
-inline void am_single_150(autd3::Controller& autd)
+inline void am_single_200(autd3::Controller& autd)
 {
-	autd3::modulation::Sine m(150);
+	autd3::modulation::Sine m(200);
 
 	const autd3::Vector3 center = autd3::Vector3(autd3::AUTD3::DEVICE_WIDTH - 10.0, -10.0, 240.0);
 	autd3::gain::Focus g(center, 1.0);
 
 	autd << autd3::SilencerConfig::none() << m, g;
 }
-
