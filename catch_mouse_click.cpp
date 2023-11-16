@@ -1,5 +1,15 @@
+#include <algorithm>
+#include <functional>
+#include <iostream>
+#include <sstream>
+#include <string>
+#include <utility>
+#include <vector>
 #include <windows.h>
+
 #include <chrono>
+#include <thread>
+#include <random>
 using std::this_thread::sleep_for;
 
 HWND hwndMessageWindow;
@@ -8,6 +18,7 @@ LRESULT CALLBACK MouseWindowProcedure(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 {
     std::string dataToSend0 = "00";
     std::string dataToSend9 = "09";
+    DWORD bytesWritten;
     switch (msg)
     {
     case WM_INPUT:
@@ -19,7 +30,7 @@ LRESULT CALLBACK MouseWindowProcedure(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
             std::unique_ptr<BYTE[]> rawdata = std::make_unique<BYTE[]>(dwSize);
             if (GetRawInputData((HRAWINPUT)lParam, RID_INPUT, rawdata.get(), &dwSize, sizeof(RAWINPUTHEADER)) == dwSize)
             {
-                RAWINPUT *raw = reinterpret_cast<RAWINPUT *>(rawdata.get());
+                RAWINPUT* raw = reinterpret_cast<RAWINPUT*>(rawdata.get());
                 if (raw->header.dwType == RIM_TYPEMOUSE && raw->data.mouse.usButtonFlags & RI_MOUSE_LEFT_BUTTON_DOWN)
                 {
                     WriteFile(hComm, dataToSend9.c_str(), dataToSend0.size(), &bytesWritten, NULL);
@@ -79,7 +90,7 @@ int main()
     }
 
     // COMポートの設定
-    DCB dcbSerialParams = {0};
+    DCB dcbSerialParams = { 0 };
     dcbSerialParams.DCBlength = sizeof(dcbSerialParams);
     GetCommState(hComm, &dcbSerialParams);
     dcbSerialParams.BaudRate = CBR_115200;
@@ -96,7 +107,7 @@ int main()
     WriteFile(hComm, dataToSendRR.c_str(), dataToSendRR.size(), &bytesWritten, NULL);
     WriteFile(hComm, dataToSendRR.c_str(), dataToSendRR.size(), &bytesWritten, NULL);
 
-    WNDCLASS wndClass = {0};
+    WNDCLASS wndClass = { 0 };
     wndClass.lpfnWndProc = MouseWindowProcedure;
     wndClass.hInstance = GetModuleHandle(NULL);
     wndClass.lpszClassName = "MouseMessageWindowClass";

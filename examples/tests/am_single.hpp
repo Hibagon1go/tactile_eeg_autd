@@ -20,7 +20,10 @@ inline void am_single_100(autd3::Controller &autd)
   const autd3::Vector3 center = autd3::Vector3(autd3::AUTD3::DEVICE_WIDTH - 10.0, -10.0, 240.0);
   autd3::gain::Focus g(center, 1.0);
 
-  autd << autd3::SilencerConfig::none() << m, g;
+  autd3::SilencerConfig config;
+  config.step = 2750;
+
+  autd << config << m, g;
 }
 
 inline void am_single_200(autd3::Controller& autd)
@@ -30,6 +33,9 @@ inline void am_single_200(autd3::Controller& autd)
 	const autd3::Vector3 center = autd3::Vector3(autd3::AUTD3::DEVICE_WIDTH - 10.0, -10.0, 240.0);
 	autd3::gain::Focus g(center, 1.0);
 
-	autd << autd3::SilencerConfig::none() << m, g;
+	autd3::SilencerConfig config;
+	config.step = 2750;
+
+	autd << config << m, g;
 }
 

@@ -42,8 +42,21 @@
 #include <thread>
 #include <iostream>
 #include <random>
+#include <fstream>
+#include <ctime>
 
 using std::this_thread::sleep_for;
+
+void write_timestamp(std::ofstream& file) {
+    auto t = std::time(nullptr);
+    auto tm = *std::localtime(&t);
+
+    char buffer[32];
+    if (std::strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", &tm)) {
+        file << buffer << std::endl;  // CSVに書き込む形式を指定
+    }
+}
+
 
 inline int run(autd3::Controller &autd)
 {
@@ -105,7 +118,7 @@ inline int run(autd3::Controller &autd)
 
     autd << autd3::clear << autd3::synchronize;
 
-    std::mt19937_64 mt64(0);
+    std::mt19937_64 mt64(1);
     std::uniform_real_distribution<double> uni(0, 1);
 
     std::array<int, 160> trials;
@@ -120,6 +133,15 @@ inline int run(autd3::Controller &autd)
     std::shuffle(trials.begin(), trials.end(), mt64);
 
     std::string dataToBrainAmp;
+
+    std::ofstream file("C:/Users/user/Desktop/master_thesis_data/1116/timestamp6.csv", std::ios::out | std::ios::app);
+    if (!file.is_open()) {
+        std::cerr << "Failed to open the CSV file." << std::endl;
+        return -1;
+    }
+    write_timestamp(file);
+    file.close();
+    sleep_for(std::chrono::milliseconds(3000));
 
     for (int trial : trials)
     {
@@ -183,13 +205,16 @@ inline int run(autd3::Controller &autd)
             const autd3::Vector3 center = autd3::Vector3(autd3::AUTD3::DEVICE_WIDTH - 10.0, -10.0, 240.0);
             autd3::gain::Focus g(center, 1.0);
 
-            autd << autd3::SilencerConfig::none() << m, g;
+            autd3::SilencerConfig config;
+            config.step = 2750;
+
+            autd << config << m, g;
             sleep_for(std::chrono::milliseconds(100));
             autd << autd3::stop;
 
             sleep_for(std::chrono::milliseconds(100));
 
-            autd << autd3::SilencerConfig::none() << m, g;
+            autd << config << m, g;
             sleep_for(std::chrono::milliseconds(100));
             autd << autd3::stop;
         }
